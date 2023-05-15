@@ -12,9 +12,9 @@ with nxt.locator.find() as b:
     power = 75
 
     # Turn 180 degrees to the left
-    motor.step(power=power, steps=180, brake=True, regulation_mode=True)
+    motor.step(power, 180, True, True)
     motor.idle()
 
     # Turn 180 degrees to the right
-    motor.step(power=-power, steps=180, brake=True, regulation_mode=True)
+    motor.step(-power, 180, True, True)
     motor.idle()

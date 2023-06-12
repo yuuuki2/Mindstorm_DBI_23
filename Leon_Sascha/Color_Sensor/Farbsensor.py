@@ -6,6 +6,9 @@ import nxt.motor
 import time
 
 def color_rgb():
+    """
+    Returns the RGBW values read from the color sensor.
+    """
     red = color.get_active_color().red
     green = color.get_active_color().green
     blue = color.get_active_color().blue
@@ -13,14 +16,18 @@ def color_rgb():
     return  red,green,blue,white
 
 def color_sens(red,green,blue,white, line_color,a):
+    """
+    Controls the NXT robot based on the color sensor readings.
+    """
     color_checks = {
-        "red": lambda: red > green and red > blue and red > white,
-        "green": lambda: green > red and green > blue and green > white,
-        "blue": lambda: blue > red and blue > green and blue > white
+        "red": lambda: red > green and red > blue,
+        "green": lambda: green > red and green > blue,
+        "blue": lambda: blue > red and blue > green
     }
     
     
     if color_checks[line_color]():
+    
         control(motor_left, motor_right, 0)
         con = 1
         return con 
@@ -38,27 +45,30 @@ def color_sens(red,green,blue,white, line_color,a):
             
     
             
-def control(motor_left,motor_right,controll_number):
+def control(motor_left,motor_right,control_number):
+    """
+    Controls the motors based on the provided control number.
+    """
     speed = 70
-    if controll_number == 0: #forward
+    if control_number == 0: #forward
         motor_left.run(-speed, True)
         motor_right.run(-speed, True)
         
-    elif controll_number == 1: #left
-        motor_left.turn(speed, 5)
-        motor_right.turn(-speed, 5)
-            
-    elif controll_number == 2: #right
+    elif control_number == 1: # turn right
         motor_left.turn(-speed, 5)
-        motor_right.turn(speed, 5) 
+        motor_right.turn(speed, 5)
+            
+    elif control_number == 2: #turn left
+        motor_left.turn(speed, 5)
+        motor_right.turn(-speed, 5) 
             
             
     
   
 
 with nxt.locator.find() as b:
-    motor_left = b.get_motor(nxt.motor.Port.A)
-    motor_right = b.get_motor(nxt.motor.Port.B)
+    motor_right = b.get_motor(nxt.motor.Port.A)
+    motor_left = b.get_motor(nxt.motor.Port.B)
     touch = b.get_sensor(nxt.sensor.Port.S1, nxt.sensor.generic.Touch)
     color = b.get_sensor(nxt.sensor.Port.S3, nxt.sensor.hitechnic.Colorv2)
     
@@ -66,10 +76,8 @@ with nxt.locator.find() as b:
     a = 0
     
     while True:
-        value = touch.get_sample()
-        if value == True:
-            a += 1
-            red,green,blue,white = color_rgb()
-            cont = color_sens(red,green,blue,white,line_color,a)
-            if cont == 1:
-                a = 0
+        a += 1
+        red,green,blue,white = color_rgb()
+        cont = color_sens(red,green,blue,white,line_color,a)
+        if cont == 1:
+            a = 0
